@@ -2,6 +2,7 @@ package com.example.readingisgood.service;
 
 import com.example.readingisgood.dto.CustomerDto;
 import com.example.readingisgood.dto.RegisterCustomerRequest;
+import com.example.readingisgood.exception.CustomerNotFoundException;
 import com.example.readingisgood.model.Customer;
 import com.example.readingisgood.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,10 @@ public class CustomerService {
 
     public List<Customer> getAllCustomer() {
         return customerRepository.findAll();
+    }
+    protected Customer findCustomerById(String id){
+        return customerRepository.findById(id)
+                .orElseThrow(
+                        ()-> new CustomerNotFoundException("Customer not found "+id));
     }
 }

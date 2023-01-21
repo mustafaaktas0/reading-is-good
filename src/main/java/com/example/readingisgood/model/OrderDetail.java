@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,9 +21,14 @@ public class OrderDetail {
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    private String Id;
-    private String CustomerId;
+    private String id;
+    private String customerId;
     @ElementCollection
-    private List<Integer> bookList;
+    private List<String> bookList;
     private Double totalPrice;
+    @CreationTimestamp
+    private LocalDateTime createDateTime;
+    @CreationTimestamp
+    private LocalDateTime endDate;
+
 }

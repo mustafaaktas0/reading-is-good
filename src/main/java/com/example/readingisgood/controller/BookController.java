@@ -6,10 +6,7 @@ import com.example.readingisgood.dto.UpdateBookStock;
 import com.example.readingisgood.model.Book;
 import com.example.readingisgood.model.BookStock;
 import com.example.readingisgood.service.BookService;
-import com.example.readingisgood.service.BookStockService;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
