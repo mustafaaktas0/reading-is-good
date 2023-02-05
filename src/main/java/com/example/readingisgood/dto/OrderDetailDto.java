@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Data
@@ -21,7 +22,7 @@ public class OrderDetailDto {
                 .customerId(orderDetail.getCustomerId())
                 .bookList(orderDetail.getBookList())
                 .createDateTime(orderDetail.getCreateDateTime())
-                .endDate(orderDetail.getEndDate())
+                .endDate(orderDetail.getCreateDateTime().plus(10, ChronoUnit.DAYS))
                 .build();
     }
 }

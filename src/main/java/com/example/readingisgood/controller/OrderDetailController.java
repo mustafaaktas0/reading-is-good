@@ -35,8 +35,8 @@ public class OrderDetailController {
         return ResponseEntity.ok(orderDetailService.getOrderDetailById(id));
     }
 
-    @PostMapping("/date")
-    public ResponseEntity<List<OrderDetailDto>> getOrderDetailsByDateInterval(@RequestBody DateIntervalRequest request) {
+    @GetMapping("/date")
+    public ResponseEntity<List<OrderDetailDto>> getOrderDetailsByDateInterval(@Valid @RequestBody DateIntervalRequest request) {
         return ResponseEntity.ok(orderDetailService.getOrderDetailsByDateInterval(request));
     }
 }

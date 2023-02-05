@@ -28,7 +28,5 @@ public class OrderDetail {
     private Double totalPrice;
     @CreationTimestamp
     private LocalDateTime createDateTime;
-    @CreationTimestamp
-    private LocalDateTime endDate;
 
 }

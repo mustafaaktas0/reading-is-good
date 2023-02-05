@@ -37,6 +37,17 @@ public class BookStockService {
         bookStockRepository.save(bookStock);
     }
 
+    public void updateRentalBookStock(String bookId) throws Exception {
+
+        BookStock bookStock = bookStockRepository.findBookByBookId(bookId);
+        int newQuentityStock = bookStock.getQuantityStock() - 1;
+        if (newQuentityStock >= 0) {
+            bookStock.setQuantityStock(newQuentityStock);
+            bookStockRepository.save(bookStock);
+        } else {
+            throw new BookNotFoundException("Book not found");
+        }
+    }
     public List<BookStock> getAllBookStock() {
 
         return bookStockRepository.findAll();
