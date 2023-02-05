@@ -3,7 +3,6 @@ package com.example.readingisgood.service;
 import com.example.readingisgood.dto.AddOrderDetailRequest;
 import com.example.readingisgood.dto.DateIntervalRequest;
 import com.example.readingisgood.dto.OrderDetailDto;
-import com.example.readingisgood.exception.BookNotFoundException;
 import com.example.readingisgood.exception.OrderDetailNotFoundException;
 import com.example.readingisgood.model.Book;
 import com.example.readingisgood.model.Customer;
@@ -22,11 +21,13 @@ public class OrderDetailService {
     private final OrderDetailRepository orderDetailRepository;
     private final CustomerService customerService;
     private final BookService bookService;
+    private final BookStockService bookStockService;
 
-    public OrderDetailService(OrderDetailRepository orderDetailRepository, CustomerService customerService, BookService bookService) {
+    public OrderDetailService(OrderDetailRepository orderDetailRepository, CustomerService customerService, BookService bookService, BookStockService bookStockService) {
         this.orderDetailRepository = orderDetailRepository;
         this.customerService = customerService;
         this.bookService = bookService;
+        this.bookStockService = bookStockService;
     }
 
     public List<OrderDetail> getAllOrderDetail() {
@@ -36,10 +37,6 @@ public class OrderDetailService {
     @SneakyThrows
     public OrderDetailDto addOrder(AddOrderDetailRequest addOrderDetailRequest) {
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime tenDaysLater = now.plus(10, ChronoUnit.DAYS);
-        System.out.println("10 gün sonrasının tarihi ve saati: " + tenDaysLater);
-        System.out.println("10 gün sonrasının tarihi: " + tenDaysLater);
         Customer customer = findCustomerById(addOrderDetailRequest.getCustomerId());
         List<Book> bookList = addOrderDetailRequest.getBookList()
                 .stream()
@@ -50,10 +47,11 @@ public class OrderDetailService {
         OrderDetail orderDetail = OrderDetail.builder()
                 .bookList(addOrderDetailRequest.getBookList())
                 .customerId(addOrderDetailRequest.getCustomerId())
-                .createDateTime(now)
-                .endDate(tenDaysLater)
+                .createDateTime(LocalDateTime.now())
                 .totalPrice(getCalculatePrice(addOrderDetailRequest.getBookList()))
                 .build();
+
+        updateStock(bookList);
         return OrderDetailDto.converterOrderDetailDto(orderDetailRepository.save(orderDetail));
     }
 
@@ -75,10 +73,14 @@ public class OrderDetailService {
         return bookService.findBookById(id);
     }
 
-
-    private void updateStock() {
-
-
+    private void updateStock(List<Book> bookList) {
+        for (Book book : bookList) {
+            try {
+                bookStockService.updateRentalBookStock(book.getId());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @SneakyThrows
@@ -90,20 +92,14 @@ public class OrderDetailService {
     protected OrderDetail findOrderDetailById(String id) {
         return orderDetailRepository.findById(id)
                 .orElseThrow(
-                        () -> new OrderDetailNotFoundException("Order detail ould not find by id:" + id));
+                        () -> new OrderDetailNotFoundException("Order detail could not find by id:" + id));
 
     }
 
     public List<OrderDetailDto> getOrderDetailsByDateInterval(DateIntervalRequest request) {
-
-        return getOrdersByDateInterval(request.getStartDate(), request.getEndDate())
-                .stream()
-                .map(orderDetail -> OrderDetailDto.converterOrderDetailDto(orderDetail))
+        List<OrderDetail> orders = orderDetailRepository.findBycreateDateTimeBetween(request.getStartDate(), request.getEndDate());
+        return orders.stream()
+                .map(OrderDetailDto::converterOrderDetailDto)
                 .collect(Collectors.toList());
-
-    }
-
-    public List<OrderDetail> getOrdersByDateInterval(LocalDateTime startDate, LocalDateTime endDate) {
-        return orderDetailRepository.findBycreateDateTimeBetween(startDate, endDate);
     }
 }
