@@ -1,0 +1,17 @@
+version: '2.4'
+
+services:
+  reading-is-good:
+    image: reading-is-good:0.0.1
+    ports:
+      - 9091:8081
+
+    environment:
+      DB_URL: "jdbc:h2:tcp://h2db/bookstore-db;DB_CLOSE_DELAY=-1"
+      DB_USERNAME: "admin"
+      DB_PASSWORD: "admin"
+
+  h2db:
+    image: buildo/h2database
+    ports:
+      - 9092:8082
